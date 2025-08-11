@@ -1,3 +1,9 @@
+// TODO:
+// get initial page height
+// monitor when user scrolls a distance equivalent to the initial page height
+// if it doesn't work to do a document.load event, then could try to attach an invisible sentinel div to bottom of page, and trigger when it comes into view.
+//   However, this may not work if the infinite scroll feed loads new content before the user reaches the bottom of the page.
+
 let scrollY = 0; // current scroll position
 let totalAmountScrolled = 0; // cumulative scroll distance
 
@@ -75,28 +81,34 @@ for (const [key, value] of Object.entries(feedCandidatesTitleStyle)) {
 // try to detect elements that are added to the document
 // infer which element is the feed container by finding parent of elements
 
+// narrow down parent candidates, and run further checks on parents.
+// filter for parents that have large numbers of similar looking children, eg. <article class="post">, <div class="feed-item">, etc.
+
 const feedCandidates = new Map();
+
+let minimumNumberOfChildren = 10; // minimum number of children to consider a parent as a feed container candidate
 
 const mutationObserver = new MutationObserver((mutations) => {
   for (const mutation of mutations) {
     for (const addedNode of mutation.addedNodes) {
       if (
         addedNode.nodeType === 1 &&
-        addedNode.parentElement &&
         addedNode.style.display !== "none" &&
-        addedNode.parentElement.style.display !== "none"
+        addedNode.parentElement &&
+        addedNode.parentElement.style.display !== "none" &&
+        addedNode.parentElement.children.length > minimumNumberOfChildren
       ) {
+        // TODO:
+        // is there a standout parent that gets new children added, at a high rate, and in correlation with scroll events?
+        // perhaps this could also be done by hooking into XMLHttpRequest or fetch to detect data loads typical of infinite scroll (e.g., a JSON API returning post data).
+
         const parent = addedNode.parentElement;
 
         const parentTag = parent.tagName.toLowerCase();
         const parentClasses = parent.className;
         const key = `${parentTag}.${parentClasses}`;
 
-        if (feedCandidates.has(key)) {
-          feedCandidates.set(key, feedCandidates.get(key) + 1);
-        } else {
-          feedCandidates.set(key, 1);
-        }
+        feedCandidates.set(key, parent.children.length);
 
         scheduleUpdate(); // update the readout panel
       }
