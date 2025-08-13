@@ -42,6 +42,16 @@ for (const [key, value] of Object.entries(scrollReadoutStyle)) {
   scrollReadout.style[key] = value;
 }
 
+function isElementVisible(HTMLElement) {
+  return (
+    HTMLElement.offsetWidth > 0 &&
+    HTMLElement.offsetHeight > 0 &&
+    getComputedStyle(HTMLElement).visibility !== "hidden" &&
+    getComputedStyle(HTMLElement).opacity !== "0" &&
+    !HTMLElement.closest("[style*='display: none']")
+  );
+}
+
 // create a similar panel to readout feed container candidates
 const feedCandidatesReadoutStyle = {
   position: "fixed",
@@ -93,9 +103,9 @@ const mutationObserver = new MutationObserver((mutations) => {
     for (const addedNode of mutation.addedNodes) {
       if (
         addedNode.nodeType === 1 &&
-        addedNode.style.display !== "none" &&
+        isElementVisible(addedNode) &&
         addedNode.parentElement &&
-        addedNode.parentElement.style.display !== "none" &&
+        isElementVisible(addedNode.parentElement) &&
         addedNode.parentElement.children.length > minimumNumberOfChildren
       ) {
         // TODO:
