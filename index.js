@@ -4,6 +4,22 @@
 // if it doesn't work to do a document.load event, then could try to attach an invisible sentinel div to bottom of page, and trigger when it comes into view.
 //   However, this may not work if the infinite scroll feed loads new content before the user reaches the bottom of the page.
 
+// Inject a script into the actual page context
+
+const script = document.createElement("script");
+script.src = chrome.runtime.getURL("injected.js"); // packaged in your extension
+(document.head || document.documentElement).appendChild(script);
+script.remove();
+
+// Now listen for those events in the content script
+window.addEventListener("spa-navigation", (e) => {
+  console.log("[CONTENT SCRIPT] SPA navigation happened!", e.detail);
+
+  if (e.detail === "load") {
+    // initial page load
+  }
+});
+
 let scrollY = 0; // current scroll position
 let totalAmountScrolled = 0; // cumulative scroll distance
 
