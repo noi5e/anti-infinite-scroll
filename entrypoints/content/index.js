@@ -6,25 +6,33 @@
 
 // Inject a script into the actual page context
 
-const script = document.createElement("script");
-script.src = chrome.runtime.getURL("injected.js"); // packaged in your extension
-(document.head || document.documentElement).appendChild(script);
-script.remove();
+export default defineContentScript({
+  matches: ["<all_urls>"],
+  run_at: "document_start",
+  main(context) {
+    console.log("Hello from the extension!");
 
-// Now listen for those events in the content script
-window.addEventListener("spa-navigation", (e) => {
-  console.log("[CONTENT SCRIPT] SPA navigation happened!", e.detail);
+    const script = document.createElement("script");
+    script.src = chrome.runtime.getURL("injected.js"); // packaged in your extension
+    (document.head || document.documentElement).appendChild(script);
+    script.remove();
 
-  if (e.detail.type === "load") {
-    // initial page load
-    if (document.body) {
-      console.log("Document body is available");
-      initialize();
-    } else {
-      console.log("Document body is not available yet");
-      waitForBody(initialize);
-    }
-  }
+    // Now listen for those events in the content script
+    window.addEventListener("spa-navigation", (e) => {
+      console.log("[CONTENT SCRIPT] SPA navigation happened!", e.detail);
+
+      if (e.detail.type === "load") {
+        // initial page load
+        if (document.body) {
+          console.log("Document body is available");
+          initialize();
+        } else {
+          console.log("Document body is not available yet");
+          waitForBody(initialize);
+        }
+      }
+    });
+  },
 });
 
 function waitForBody(callback) {

@@ -12,7 +12,8 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
-    "noEmit": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
     "jsx": "react-jsx",
 
     /* Linting */
@@ -21,7 +22,9 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "composite": true
   },
-  "include": ["src"]
+  "include": ["src", "entrypoints/popup/App.tsx", "entrypoints/popup/main.tsx"]
 }
