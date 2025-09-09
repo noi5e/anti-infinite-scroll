@@ -7,32 +7,39 @@
 // Inject a script into the actual page context
 
 export default defineContentScript({
-  matches: ["<all_urls>"],
+  matches: ["*://*/*"],
   run_at: "document_start",
-  main(context) {
-    console.log("Hello from the extension!");
-
-    const script = document.createElement("script");
-    script.src = chrome.runtime.getURL("injected.js"); // packaged in your extension
-    (document.head || document.documentElement).appendChild(script);
-    script.remove();
-
-    // Now listen for those events in the content script
-    window.addEventListener("spa-navigation", (e) => {
-      console.log("[CONTENT SCRIPT] SPA navigation happened!", e.detail);
-
-      if (e.detail.type === "load") {
-        // initial page load
-        if (document.body) {
-          console.log("Document body is available");
-          initialize();
-        } else {
-          console.log("Document body is not available yet");
-          waitForBody(initialize);
-        }
-      }
+  async main() {
+    console.log("Injecting script...");
+    await injectScript("/injected.js", {
+      keepInDom: true,
     });
+    console.log("Done!");
   },
+  // async main(context) {
+  //   console.log("Hello from the extension!");
+
+  //   const script = document.createElement("script");
+  //   script.src = chrome.runtime.getURL("injected.js"); // packaged in your extension
+  //   (document.head || document.documentElement).appendChild(script);
+  //   script.remove();
+
+  //   // Now listen for those events in the content script
+  //   window.addEventListener("spa-navigation", (e) => {
+  //     console.log("[CONTENT SCRIPT] SPA navigation happened!", e.detail);
+
+  //     if (e.detail.type === "load") {
+  //       // initial page load
+  //       if (document.body) {
+  //         console.log("Document body is available");
+  //         initialize();
+  //       } else {
+  //         console.log("Document body is not available yet");
+  //         waitForBody(initialize);
+  //       }
+  //     }
+  //   });
+  // },
 });
 
 function waitForBody(callback) {

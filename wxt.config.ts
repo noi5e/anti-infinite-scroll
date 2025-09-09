@@ -7,13 +7,12 @@ export default defineConfig({
     name: "Anti-Infinite Scroll",
     description:
       "Detects the presence of infinite scroll, removes it, and paginates/titrates results.",
-    content_scripts: [
+    permissions: ["activeTab"],
+    web_accessible_resources: [
       {
-        matches: ["<all_urls>"],
-        js: ["index.js"],
-        run_at: "document_start",
+        resources: ["injected.js"],
+        matches: ["*://*/*"],
       },
     ],
-    permissions: ["activeTab"],
   },
 });
