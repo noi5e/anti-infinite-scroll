@@ -8,11 +8,5 @@ export default defineConfig({
     description:
       "Detects the presence of infinite scroll, removes it, and paginates/titrates results.",
     permissions: ["activeTab"],
-    web_accessible_resources: [
-      {
-        resources: ["injected.js"],
-        matches: ["*://*/*"],
-      },
-    ],
   },
 });

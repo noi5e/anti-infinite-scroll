@@ -9,37 +9,27 @@
 export default defineContentScript({
   matches: ["*://*/*"],
   run_at: "document_start",
-  async main() {
-    console.log("Injecting script...");
+  async main(context) {
     await injectScript("/injected.js", {
       keepInDom: true,
     });
-    console.log("Done!");
+
+    if (document.body) {
+      console.log("Document body is available");
+      initialize();
+    } else {
+      console.log("Document body is not available yet");
+      waitForBody(initialize);
+    }
+
+    // TODO: Implement location change monitoring for SPAs
+    // Before migrating to WXT, this was done using an injected script
+    // However, WXT contains an internal mechanism for handling location changes, need to write that to monitor navigation within SPAs
+
+    // context.addEventListener(window, "wxt:locationchange", (event) => {
+    //   console.log(event.newUrl);
+    // });
   },
-  // async main(context) {
-  //   console.log("Hello from the extension!");
-
-  //   const script = document.createElement("script");
-  //   script.src = chrome.runtime.getURL("injected.js"); // packaged in your extension
-  //   (document.head || document.documentElement).appendChild(script);
-  //   script.remove();
-
-  //   // Now listen for those events in the content script
-  //   window.addEventListener("spa-navigation", (e) => {
-  //     console.log("[CONTENT SCRIPT] SPA navigation happened!", e.detail);
-
-  //     if (e.detail.type === "load") {
-  //       // initial page load
-  //       if (document.body) {
-  //         console.log("Document body is available");
-  //         initialize();
-  //       } else {
-  //         console.log("Document body is not available yet");
-  //         waitForBody(initialize);
-  //       }
-  //     }
-  //   });
-  // },
 });
 
 function waitForBody(callback) {
@@ -193,7 +183,6 @@ function initialize() {
       feedCandidatesList.append(candidateDiv);
     }
 
-    console.log(feedCandidates);
     updateScheduled = false;
     mutationObserver.observe(document.body, { subtree: true, childList: true });
   }
