@@ -15,10 +15,8 @@ export default defineContentScript({
     });
 
     if (document.body) {
-      console.log("Document body is available");
       initialize();
     } else {
-      console.log("Document body is not available yet");
       waitForBody(initialize);
     }
 
@@ -37,7 +35,6 @@ function waitForBody(callback) {
 
   const observer = new MutationObserver(() => {
     if (document.body) {
-      console.log("MutationObserver triggered");
       observer.disconnect();
       callback();
     }
@@ -50,8 +47,6 @@ function waitForBody(callback) {
 }
 
 function initialize() {
-  console.log("Initialize called");
-
   waitForStableHeight((height) => {
     console.log("Final stable height:", height);
   });
