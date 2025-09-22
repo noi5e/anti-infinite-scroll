@@ -4,9 +4,5 @@
     "jsx": "react-jsx"
   },
   "extends": "./.wxt/tsconfig.json",
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "files": []
 }
